@@ -54,12 +54,18 @@ export default function CartPage() {
                 {items.map((item) => (
                   <li key={`${item.productId}-${item.variantId}`} className="p-4 sm:p-6 flex flex-col sm:flex-row gap-4">
                     <div className="relative w-24 h-24 bg-muted rounded-md overflow-hidden shrink-0">
-                      <Image
-                        src={item.image}
-                        alt={item.title}
-                        fill
-                        className="object-cover"
-                      />
+                      {item.image ? (
+                        <Image
+                          src={item.image}
+                          alt={item.title || "Product"}
+                          fill
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-slate-400">
+                          <ShoppingBag className="w-8 h-8" />
+                        </div>
+                      )}
                     </div>
                     
                     <div className="flex-1 flex flex-col justify-between">

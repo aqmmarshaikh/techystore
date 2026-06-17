@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { MapPin, Truck, CheckCircle2, CreditCard } from "lucide-react";
+import { MapPin, Truck, CheckCircle2, CreditCard, Package } from "lucide-react";
 import { db } from "@/firebase/config";
 import { collection, addDoc, doc, updateDoc, increment } from "firebase/firestore";
 import { ClientOnly } from "@/components/ui/client-only";
@@ -174,17 +174,6 @@ export default function CheckoutPage() {
                             }}>Add Delivery Instructions</Button>
                           </div>
 
-                          {/* Mock Map Preview Box */}
-                          {selectedAddress === idx && (
-                            <div className="mt-4 w-full h-24 rounded-lg bg-slate-100 overflow-hidden relative border">
-                              <div className="absolute inset-0 bg-[url('https://maps.googleapis.com/maps/api/staticmap?center=20.5937,78.9629&zoom=14&size=400x150&maptype=roadmap')] bg-cover bg-center opacity-50" />
-                              <div className="absolute inset-0 flex items-center justify-center">
-                                <div className="bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full text-xs font-semibold shadow-sm flex items-center gap-1.5">
-                                  <MapPin className="w-3 h-3 text-primary" /> Delivery Zone Confirmed
-                                </div>
-                              </div>
-                            </div>
-                          )}
                         </div>
                       );
                     })}
@@ -293,8 +282,12 @@ export default function CheckoutPage() {
               <div className="max-h-[300px] overflow-y-auto space-y-4 pr-2">
                 {items.map((item) => (
                   <div key={`${item.productId}-${item.variantId}`} className="flex gap-4">
-                    <div className="relative w-16 h-16 rounded-md overflow-hidden bg-muted shrink-0">
-                      <Image src={item.image} alt={item.title} fill className="object-cover" />
+                    <div className="relative w-16 h-16 rounded-md overflow-hidden bg-muted shrink-0 flex items-center justify-center text-slate-400">
+                      {item.image ? (
+                        <Image src={item.image} alt={item.title || "Product"} fill className="object-cover" />
+                      ) : (
+                        <Package className="w-6 h-6" />
+                      )}
                     </div>
                     <div className="flex-1 text-sm">
                       <p className="font-medium line-clamp-2">{item.title}</p>

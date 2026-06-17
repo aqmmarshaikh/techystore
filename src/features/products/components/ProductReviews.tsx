@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Star } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { ReviewService } from "@/services/review.service";
 
 interface ProductReviewsProps {
   productId: string;
@@ -20,29 +21,16 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
   const [comment, setComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Load mock reviews for demonstration
   useEffect(() => {
-    // In a real app, fetch from ProductService or ReviewService
-    setReviews([
-      {
-        id: "r1",
-        productId,
-        userId: "user1",
-        userName: "Alice Smith",
-        rating: 5,
-        comment: "Absolutely love this product! The quality is outstanding and it arrived quickly.",
-        createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
-      },
-      {
-        id: "r2",
-        productId,
-        userId: "user2",
-        userName: "John Doe",
-        rating: 4,
-        comment: "Very good, but I wish the battery life was a bit longer. Still highly recommended.",
-        createdAt: new Date(Date.now() - 86400000 * 5).toISOString(),
+    const fetchReviews = async () => {
+      try {
+        const data = await ReviewService.getReviewsByProduct(productId);
+        setReviews(data);
+      } catch (error) {
+        console.error("Failed to fetch reviews:", error);
       }
-    ]);
+    };
+    fetchReviews();
   }, [productId]);
 
   const handleSubmit = async (e: React.FormEvent) => {

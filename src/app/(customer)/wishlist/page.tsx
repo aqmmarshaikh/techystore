@@ -1,15 +1,21 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { ProductCard } from "@/features/products/components/ProductCard";
 import { Button } from "@/components/ui/button";
 import { Heart, ShoppingBag } from "lucide-react";
-import { Product } from "@/types";
+import { useWishlistStore } from "@/store/wishlistStore";
 
 export default function WishlistPage() {
-  // In a real implementation, this would pull from the wishlistStore or Firestore
-  // For now, we'll demonstrate an empty state and what it looks like with items
-  const wishlistItems: Product[] = []; 
+  const [mounted, setMounted] = useState(false);
+  const { items: wishlistItems } = useWishlistStore();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
 
   return (
     <div className="container mx-auto px-4 py-8 md:py-12">

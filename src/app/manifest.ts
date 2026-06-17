@@ -2,8 +2,8 @@ import { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'FreshMart E-commerce',
-    short_name: 'FreshMart',
+    name: 'TechyMart E-commerce',
+    short_name: 'TechyMart',
     description: 'Premium e-commerce experience for modern individuals.',
     start_url: '/',
     display: 'standalone',

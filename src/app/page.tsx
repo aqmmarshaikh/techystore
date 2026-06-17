@@ -8,46 +8,7 @@ export default async function Home() {
   // Fetch featured products from Firebase (will be empty initially)
   const featuredProducts = await ProductService.getFeaturedProducts(4).catch(() => []);
 
-  // Mock data for initial UI rendering before database is populated
-  const mockProducts = [
-    {
-      id: "1",
-      title: "Premium Wireless Headphones",
-      slug: "premium-wireless-headphones",
-      description: "High quality noise-cancelling headphones.",
-      price: 12999,
-      salePrice: 9999,
-      images: ["https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80"],
-      categoryId: "electronics",
-      stock: 10,
-      rating: 4.8,
-      reviewsCount: 124,
-      featured: true,
-      isActive: true,
-      tags: [],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
-    {
-      id: "2",
-      title: "Minimalist Smartwatch",
-      slug: "minimalist-smartwatch",
-      description: "Sleek and elegant smartwatch for everyday use.",
-      price: 8999,
-      images: ["https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80"],
-      categoryId: "electronics",
-      stock: 5,
-      rating: 4.5,
-      reviewsCount: 89,
-      featured: true,
-      isActive: true,
-      tags: [],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
-  ];
-
-  const displayProducts = featuredProducts.length > 0 ? featuredProducts : mockProducts;
+  const displayProducts = featuredProducts;
 
   return (
     <main className="flex min-h-screen flex-col items-center w-full">
@@ -123,13 +84,19 @@ export default async function Home() {
               <Link href="/products">View All &rarr;</Link>
             </Button>
           </div>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {displayProducts.map((product) => (
-              <ProductCard key={product.id} product={product as any} />
-            ))}
+            {displayProducts.length > 0 ? (
+              displayProducts.map((product) => (
+                <ProductCard key={product.id} product={product as any} />
+              ))
+            ) : (
+              <div className="col-span-full py-12 text-center border-2 border-dashed rounded-xl bg-slate-50">
+                <p className="text-muted-foreground">No featured products available at this time.</p>
+              </div>
+            )}
           </div>
-          
+
           <Button variant="outline" className="w-full mt-8 sm:hidden" asChild>
             <Link href="/products">View All Products</Link>
           </Button>
@@ -143,8 +110,8 @@ export default async function Home() {
           <p className="text-lg opacity-90 max-w-2xl mx-auto">
             Get up to 40% off on all electronics this week. Use code FESTIVAL40 at checkout.
           </p>
-          <Button variant="secondary" size="lg" className="rounded-full mt-4 text-primary">
-            Claim Offer
+          <Button variant="secondary" size="lg" className="rounded-full mt-4 text-primary" asChild>
+            <Link href="/offers">Claim Offer</Link>
           </Button>
         </div>
       </section>
@@ -154,7 +121,7 @@ export default async function Home() {
         <div className="container mx-auto px-4 md:px-6">
           <div className="text-center max-w-2xl mx-auto mb-16">
             <h2 className="text-3xl font-bold tracking-tight">What Our Customers Say</h2>
-            <p className="text-muted-foreground mt-4">Don't just take our word for it. Here is what our community thinks about FreshMart.</p>
+            <p className="text-muted-foreground mt-4">Don't just take our word for it. Here is what our community thinks about TechyMart.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
@@ -187,9 +154,9 @@ export default async function Home() {
             Subscribe to our newsletter to get updates on new products and exclusive offers.
           </p>
           <form className="flex flex-col sm:flex-row gap-2 max-w-md mx-auto">
-            <input 
-              type="email" 
-              placeholder="Enter your email" 
+            <input
+              type="email"
+              placeholder="Enter your email"
               className="flex h-12 w-full rounded-full border border-input bg-background px-4 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 flex-1"
               required
               suppressHydrationWarning

@@ -25,14 +25,14 @@ export const useNotificationStore = create<NotificationState>()(
       notifications: [
         {
           id: "welcome-1",
-          title: "Welcome to FreshMart!",
+          title: "Welcome to TechyMart!",
           message: "Thank you for joining our premium marketplace. Enjoy a 10% discount on your first order with code: WELCOME10.",
           read: false,
           createdAt: new Date().toISOString(),
           type: "promo",
         }
       ],
-      
+
       addNotification: (notification) => {
         set((state) => ({
           notifications: [
@@ -68,7 +68,7 @@ export const useNotificationStore = create<NotificationState>()(
       },
     }),
     {
-      name: "freshmart-notifications",
+      name: "TechyMart-notifications",
     }
   )
 );

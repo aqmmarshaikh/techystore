@@ -1,10 +1,10 @@
-export default function ContactPage() {
+export default function ShippingPolicyPage() {
   return (
     <div className="container mx-auto px-4 py-16 max-w-4xl min-h-[70vh]">
-      <h1 className="text-4xl font-bold mb-6">Contact Us</h1>
+      <h1 className="text-4xl font-bold mb-6">Shipping Policy</h1>
       <div className="prose prose-slate dark:prose-invert max-w-none">
         <p className="text-lg text-muted-foreground">
-          This page is currently a placeholder. The full Contact page will be published soon.
+          This page is currently a placeholder. The full Shipping Policy will be published soon.
         </p>
       </div>
     </div>

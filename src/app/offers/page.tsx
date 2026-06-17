@@ -11,47 +11,27 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
-const MOCK_OFFERS: Coupon[] = [
-  {
-    code: "WELCOME20",
-    discountType: "percentage",
-    discountValue: 20,
-    minimumOrder: 500,
-    maximumDiscount: 2000,
-    expiryDate: new Date(Date.now() + 86400000 * 30).toISOString(), // 30 days
-    usageLimit: 1000,
-    usedCount: 150,
-    active: true,
-  },
-  {
-    code: "FREESHIP",
-    discountType: "free_shipping",
-    discountValue: 0,
-    minimumOrder: 999,
-    expiryDate: new Date(Date.now() + 86400000 * 7).toISOString(), // 7 days
-    usageLimit: 500,
-    usedCount: 420,
-    active: true,
-  },
-  {
-    code: "FLAT500",
-    discountType: "flat",
-    discountValue: 500,
-    minimumOrder: 3000,
-    expiryDate: new Date(Date.now() + 86400000 * 3).toISOString(), // 3 days
-    usageLimit: 200,
-    usedCount: 198,
-    active: true,
-  },
-];
+
 
 export default function OffersPage() {
-  const [offers, setOffers] = useState(MOCK_OFFERS); // Mocking offers for now
+  const [offers, setOffers] = useState<Coupon[]>([]);
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setMounted(true);
+    const fetchOffers = async () => {
+      try {
+        const data = await CouponService.getActiveCoupons();
+        setOffers(data as unknown as Coupon[]);
+      } catch (error) {
+        console.error("Failed to fetch coupons:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchOffers();
   }, []);
 
   const handleCopy = (code: string) => {
@@ -77,7 +57,7 @@ export default function OffersPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
         {offers.map((offer) => {
-          const isExpiringSoon = new Date(offer.expiryDate).getTime() - Date.now() < 86400000 * 5; // Less than 5 days
+          const isExpiringSoon = mounted ? new Date(offer.expiryDate).getTime() - Date.now() < 86400000 * 5 : false; // Less than 5 days
 
           return (
             <div key={offer.code} className="relative group overflow-hidden rounded-3xl border bg-card shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">

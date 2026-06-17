@@ -14,7 +14,7 @@ export const useWishlistStore = create<WishlistState>()(
   persist(
     (set, get) => ({
       items: [],
-      
+
       addItem: (product) => {
         set((state) => {
           if (state.items.find((item) => item.id === product.id)) {
@@ -37,7 +37,7 @@ export const useWishlistStore = create<WishlistState>()(
       clearWishlist: () => set({ items: [] }),
     }),
     {
-      name: "freshmart-wishlist",
+      name: "TechyMart-wishlist",
     }
   )
 );

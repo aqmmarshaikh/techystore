@@ -62,7 +62,7 @@ export default function RegisterPage() {
       <CardHeader className="space-y-1 text-center">
         <CardTitle className="text-2xl font-bold tracking-tight">Create an account</CardTitle>
         <CardDescription>
-          Enter your information to create your FreshMart account
+          Enter your information to create your TechyMart account
         </CardDescription>
       </CardHeader>
       <CardContent>

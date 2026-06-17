@@ -15,14 +15,7 @@ interface Category {
   isActive?: boolean;
 }
 
-const MOCK_CATEGORIES = [
-  { id: "electronics", name: "Electronics", description: "Smartphones, laptops, and accessories" },
-  { id: "fashion", name: "Fashion", description: "Trendy clothing for men and women" },
-  { id: "home", name: "Home & Furniture", description: "Decor, appliances, and furniture" },
-  { id: "beauty", name: "Beauty & Personal Care", description: "Skincare, makeup, and grooming" },
-  { id: "sports", name: "Sports & Outdoors", description: "Fitness equipment and outdoor gear" },
-  { id: "books", name: "Books", description: "Fiction, non-fiction, and educational" },
-];
+
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -40,10 +33,10 @@ export default function CategoriesPage() {
             description: c.description,
             isActive: c.isActive,
           }));
-        setCategories(activeCategories.length > 0 ? activeCategories : MOCK_CATEGORIES);
+        setCategories(activeCategories);
       } catch (error) {
         console.error("Error fetching categories:", error);
-        setCategories(MOCK_CATEGORIES);
+        setCategories([]);
       } finally {
         setLoading(false);
       }

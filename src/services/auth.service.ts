@@ -45,8 +45,8 @@ export const AuthService = {
         recipientId: user.uid,
         recipientRole: "customer",
         type: "Account",
-        title: "Welcome to FreshMart!",
-        message: `Hi ${data.name}, welcome to FreshMart. We're glad to have you here!`,
+        title: "Welcome to TechyMart!",
+        message: `Hi ${data.name}, welcome to TechyMart. We're glad to have you here!`,
         actionUrl: "/profile"
       });
 
@@ -109,8 +109,8 @@ export const AuthService = {
           recipientId: user.uid,
           recipientRole: "customer",
           type: "Account",
-          title: "Welcome to FreshMart!",
-          message: `Hi ${user.displayName || 'User'}, welcome to FreshMart. We're glad to have you here!`,
+          title: "Welcome to TechyMart!",
+          message: `Hi ${user.displayName || 'User'}, welcome to TechyMart. We're glad to have you here!`,
           actionUrl: "/profile"
         });
 
@@ -162,7 +162,7 @@ export const AuthService = {
     try {
       const userRef = doc(db, "users", uid);
       await updateDoc(userRef, data);
-      
+
       // Update Auth Profile if name changed
       if (data.name && auth.currentUser) {
         await updateProfile(auth.currentUser, {

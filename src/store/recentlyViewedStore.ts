@@ -12,15 +12,15 @@ export const useRecentlyViewedStore = create<RecentlyViewedState>()(
   persist(
     (set) => ({
       items: [],
-      
+
       addItem: (product) => {
         set((state) => {
           // Remove if it already exists to move it to the front
           const filteredItems = state.items.filter((item) => item.id !== product.id);
-          
+
           // Add to front, keep max 10 items
           const newItems = [product, ...filteredItems].slice(0, 10);
-          
+
           return { items: newItems };
         });
       },
@@ -28,7 +28,7 @@ export const useRecentlyViewedStore = create<RecentlyViewedState>()(
       clearHistory: () => set({ items: [] }),
     }),
     {
-      name: "freshmart-recently-viewed",
+      name: "TechyMart-recently-viewed",
     }
   )
 );

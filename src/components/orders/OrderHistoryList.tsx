@@ -177,8 +177,12 @@ export function OrderHistoryList() {
               
               {order.items?.map((item: any, idx: number) => (
                 <CardContent key={idx} className="p-6 flex flex-col md:flex-row gap-6 items-start md:items-center border-b last:border-b-0">
-                  <div className="w-24 h-24 bg-slate-100 rounded-xl overflow-hidden flex-shrink-0 border relative">
-                    <Image src={item.imageUrl} alt={item.title} fill className="object-cover" sizes="96px" />
+                  <div className="w-24 h-24 bg-slate-100 rounded-xl overflow-hidden flex-shrink-0 border relative flex items-center justify-center text-slate-400">
+                    {item.imageUrl ? (
+                      <Image src={item.imageUrl} alt={item.title || "Product"} fill className="object-cover" sizes="96px" />
+                    ) : (
+                      <Package className="w-8 h-8" />
+                    )}
                   </div>
                   <div className="flex-1 space-y-2">
                     <div className="flex items-center gap-2 mb-2">

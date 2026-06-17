@@ -169,8 +169,12 @@ export default function OrderTrackingPage() {
             <CardContent className="space-y-4">
               {order.items?.map((item: any, i: number) => (
                 <div key={i} className="flex gap-4 border-b pb-4 last:border-0 last:pb-0">
-                  <div className="w-16 h-16 bg-slate-100 rounded-lg overflow-hidden shrink-0 border relative">
-                    <Image src={item.imageUrl} alt={item.title} fill className="object-cover" sizes="64px" />
+                  <div className="w-16 h-16 bg-slate-100 rounded-lg overflow-hidden shrink-0 border relative flex items-center justify-center text-slate-400">
+                    {item.imageUrl ? (
+                      <Image src={item.imageUrl} alt={item.title || "Product"} fill className="object-cover" sizes="64px" />
+                    ) : (
+                      <Package className="w-6 h-6" />
+                    )}
                   </div>
                   <div className="flex-1 flex flex-col justify-center">
                     <h4 className="font-semibold">{item.title}</h4>

@@ -16,7 +16,7 @@ export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
       items: [],
-      
+
       addItem: (newItem) => {
         set((state) => {
           const existingItemIndex = state.items.findIndex(
@@ -26,12 +26,12 @@ export const useCartStore = create<CartState>()(
           if (existingItemIndex > -1) {
             const updatedItems = [...state.items];
             const newQuantity = updatedItems[existingItemIndex].quantity + newItem.quantity;
-            
+
             // Ensure we don't exceed stock
             if (newQuantity <= newItem.stock) {
               updatedItems[existingItemIndex].quantity = newQuantity;
             }
-            
+
             return { items: updatedItems };
           }
 
@@ -71,7 +71,7 @@ export const useCartStore = create<CartState>()(
       },
     }),
     {
-      name: "freshmart-cart",
+      name: "TechyMart-cart",
     }
   )
 );

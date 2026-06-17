@@ -27,50 +27,7 @@ const PRICE_RANGES = [
   { label: "Over ₹10,000", min: 10000, max: Infinity },
 ];
 
-const mockProducts: Product[] = [
-  {
-    id: "1", title: "Premium Wireless Headphones", slug: "premium-wireless-headphones",
-    description: "High quality noise-cancelling headphones.", price: 12999, salePrice: 9999,
-    images: ["https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80"],
-    categoryId: "electronics", stock: 10, rating: 4.8, reviewsCount: 124, featured: true,
-    isActive: true, tags: ["wireless", "audio"], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
-  },
-  {
-    id: "2", title: "Minimalist Smartwatch", slug: "minimalist-smartwatch",
-    description: "Sleek and elegant smartwatch for everyday use.", price: 8999,
-    images: ["https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80"],
-    categoryId: "electronics", stock: 5, rating: 4.5, reviewsCount: 89, featured: true,
-    isActive: true, tags: ["wearable"], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
-  },
-  {
-    id: "3", title: "Organic Cotton T-Shirt", slug: "organic-cotton-tshirt",
-    description: "Comfortable everyday cotton tee.", price: 1299, salePrice: 899,
-    images: ["https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&q=80"],
-    categoryId: "fashion", stock: 25, rating: 4.3, reviewsCount: 56, featured: false,
-    isActive: true, tags: ["cotton", "eco"], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
-  },
-  {
-    id: "4", title: "Leather Messenger Bag", slug: "leather-messenger-bag",
-    description: "Handcrafted genuine leather bag.", price: 4999,
-    images: ["https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=500&q=80"],
-    categoryId: "accessories", stock: 8, rating: 4.7, reviewsCount: 42, featured: true,
-    isActive: true, tags: ["leather", "bag"], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
-  },
-  {
-    id: "5", title: "Ceramic Coffee Mug Set", slug: "ceramic-coffee-mug-set",
-    description: "Set of 4 handpainted ceramic mugs.", price: 1599,
-    images: ["https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=500&q=80"],
-    categoryId: "home", stock: 15, rating: 4.6, reviewsCount: 38, featured: false,
-    isActive: true, tags: ["kitchen", "ceramic"], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
-  },
-  {
-    id: "6", title: "Portable Bluetooth Speaker", slug: "portable-bluetooth-speaker",
-    description: "Waterproof speaker with 20hr battery.", price: 3499, salePrice: 2499,
-    images: ["https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=500&q=80"],
-    categoryId: "electronics", stock: 12, rating: 4.4, reviewsCount: 97, featured: true,
-    isActive: true, tags: ["bluetooth", "audio"], createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
-  },
-];
+
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -93,9 +50,9 @@ export default function ProductsPage() {
           id: doc.id,
           ...doc.data(),
         })) as Product[];
-        setProducts(fetched.length > 0 ? fetched : mockProducts);
+        setProducts(fetched);
       } catch {
-        setProducts(mockProducts);
+        setProducts([]);
       } finally {
         setLoading(false);
       }

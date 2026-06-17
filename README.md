@@ -1,6 +1,6 @@
-# 🍏 FreshMart E-Commerce | Enterprise Next.js Architecture
+# 🍏 TechyMart E-Commerce | Enterprise Next.js Architecture
 
-Welcome to the **FreshMart** documentation. This is a production-ready, single-seller e-commerce marketplace built specifically to handle modern operational scale (up to 5,000+ products and thousands of daily active users). 
+Welcome to the **TechyMart** documentation. This is a production-ready, single-seller e-commerce marketplace built specifically to handle modern operational scale (up to 5,000+ products and thousands of daily active users). 
 
 It embraces Apple-inspired minimal design, blazing-fast Server Components, and a robust Firebase backend architecture.
 

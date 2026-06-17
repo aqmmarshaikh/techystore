@@ -8,26 +8,26 @@ import { Footer } from "@/components/layout/Footer";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "FreshMart | Premium E-Commerce Experience",
+  title: "TechyMart | Premium E-Commerce Experience",
   description: "Discover our curated collection of premium products designed for the modern individual.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "FreshMart",
+    title: "TechyMart",
   },
   formatDetection: {
     telephone: false,
   },
   openGraph: {
     type: "website",
-    title: "FreshMart | Premium E-Commerce Experience",
+    title: "TechyMart | Premium E-Commerce Experience",
     description: "Discover our curated collection of premium products designed for the modern individual.",
-    siteName: "FreshMart",
+    siteName: "TechyMart",
   },
   twitter: {
     card: "summary_large_image",
-    title: "FreshMart",
+    title: "TechyMart",
     description: "Premium e-commerce experience for modern individuals.",
   },
 };

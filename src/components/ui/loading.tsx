@@ -13,7 +13,7 @@ export function FullPageLoader() {
     <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50">
       <div className="flex flex-col items-center gap-4">
         <Loader2 className="w-12 h-12 text-primary animate-spin" />
-        <p className="text-muted-foreground animate-pulse">Loading FreshMart...</p>
+        <p className="text-muted-foreground animate-pulse">Loading TechyMart...</p>
       </div>
     </div>
   );

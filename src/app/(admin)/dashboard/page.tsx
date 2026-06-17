@@ -1,10 +1,93 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DollarSign, ShoppingBag, Users, AlertCircle, Activity, Database, MessageSquare, Undo2, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { collection, getDocs, query, where, orderBy, limit } from "firebase/firestore";
+import { db } from "@/firebase/config";
 
 export default function AdminDashboardPage() {
+  const [metrics, setMetrics] = useState({
+    revenue: 0,
+    orders: 0,
+    customers: 0,
+    conversion: 0,
+    health: 100,
+    lowStockCount: 0,
+    pendingReturns: 0,
+    openTickets: 0,
+  });
+  const [recentOrders, setRecentOrders] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        // Fetch Orders for aggregate metrics
+        const ordersSnap = await getDocs(collection(db, "orders"));
+        let totalRevenue = 0;
+        let totalOrders = 0;
+        ordersSnap.forEach((doc) => {
+          totalOrders++;
+          totalRevenue += (doc.data().total || 0);
+        });
+
+        // Fetch Customers
+        const usersSnap = await getDocs(collection(db, "users"));
+        const totalCustomers = usersSnap.size;
+
+        const conversionRate = totalCustomers > 0 ? ((totalOrders / totalCustomers) * 100).toFixed(2) : "0.00";
+
+        // Fetch Low Stock Products
+        const productsSnap = await getDocs(query(collection(db, "products"), where("stock", "<=", 5)));
+        const lowStockCount = productsSnap.size;
+
+        // Fetch Pending Returns
+        const returnsSnap = await getDocs(query(collection(db, "returnRequests"), where("status", "==", "pending")));
+        const pendingReturns = returnsSnap.size;
+
+        // Fetch Open Tickets
+        const ticketsSnap = await getDocs(query(collection(db, "tickets"), where("status", "==", "Open")));
+        const openTickets = ticketsSnap.size;
+
+        setMetrics({
+          revenue: totalRevenue,
+          orders: totalOrders,
+          customers: totalCustomers,
+          conversion: Number(conversionRate),
+          health: 100,
+          lowStockCount,
+          pendingReturns,
+          openTickets,
+        });
+
+        // Fetch Recent Orders (Needs index or client sort, but basic orderBy often works if simple)
+        try {
+          const recentOrdersQ = query(collection(db, "orders"), orderBy("createdAt", "desc"), limit(5));
+          const recentOrdersSnap = await getDocs(recentOrdersQ);
+          const recentOrdList: any[] = [];
+          recentOrdersSnap.forEach((doc) => {
+            recentOrdList.push({ id: doc.id, ...doc.data() });
+          });
+          setRecentOrders(recentOrdList);
+        } catch (e) {
+          // If orderBy throws due to missing index, fallback to sorting locally
+          const allOrders = ordersSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          allOrders.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+          setRecentOrders(allOrders.slice(0, 5));
+        }
+
+      } catch (error) {
+        console.error("Failed to fetch dashboard data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
   return (
     <div className="space-y-8">
       <div>
@@ -19,8 +102,8 @@ export default function AdminDashboardPage() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-xl lg:text-2xl font-bold">₹45k</div>
-            <p className="text-xs text-muted-foreground mt-1">+20.1%</p>
+            <div className="text-xl lg:text-2xl font-bold">₹{metrics.revenue.toLocaleString()}</div>
+            <p className="text-xs text-muted-foreground mt-1">Real-time total</p>
           </CardContent>
         </Card>
         <Card className="xl:col-span-1">
@@ -29,8 +112,8 @@ export default function AdminDashboardPage() {
             <ShoppingBag className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-xl lg:text-2xl font-bold">+2350</div>
-            <p className="text-xs text-muted-foreground mt-1">+18%</p>
+            <div className="text-xl lg:text-2xl font-bold">{metrics.orders}</div>
+            <p className="text-xs text-muted-foreground mt-1">Real-time total</p>
           </CardContent>
         </Card>
         <Card className="xl:col-span-1">
@@ -39,20 +122,19 @@ export default function AdminDashboardPage() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-xl lg:text-2xl font-bold">+12.2k</div>
-            <p className="text-xs text-muted-foreground mt-1">+19%</p>
+            <div className="text-xl lg:text-2xl font-bold">{metrics.customers}</div>
+            <p className="text-xs text-muted-foreground mt-1">Registered users</p>
           </CardContent>
         </Card>
         
-        {/* NEW PART 18 DATA */}
         <Card className="xl:col-span-1">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Conversion</CardTitle>
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-xl lg:text-2xl font-bold text-green-600">3.24%</div>
-            <p className="text-xs text-muted-foreground mt-1">Avg. Buy Rate</p>
+            <div className="text-xl lg:text-2xl font-bold text-green-600">{metrics.conversion}%</div>
+            <p className="text-xs text-muted-foreground mt-1">Orders per user</p>
           </CardContent>
         </Card>
         <Card className="xl:col-span-1">
@@ -61,7 +143,7 @@ export default function AdminDashboardPage() {
             <Database className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-xl lg:text-2xl font-bold text-blue-600">99.9%</div>
+            <div className="text-xl lg:text-2xl font-bold text-blue-600">{metrics.health}%</div>
             <p className="text-xs text-muted-foreground mt-1">Firestore Uptime</p>
           </CardContent>
         </Card>
@@ -72,8 +154,8 @@ export default function AdminDashboardPage() {
             <AlertCircle className="h-4 w-4 text-destructive" />
           </CardHeader>
           <CardContent>
-            <div className="text-xl lg:text-2xl font-bold text-destructive">12</div>
-            <p className="text-xs text-muted-foreground mt-1">Needs restock</p>
+            <div className="text-xl lg:text-2xl font-bold text-destructive">{metrics.lowStockCount}</div>
+            <p className="text-xs text-muted-foreground mt-1">Items &le; 5 qty</p>
           </CardContent>
         </Card>
       </div>
@@ -85,15 +167,21 @@ export default function AdminDashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <div key={i} className="flex items-center justify-between">
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium leading-none">Order #ORD-{1000 + i}</p>
-                    <p className="text-sm text-muted-foreground">customer{i}@example.com</p>
+              {loading ? (
+                <p className="text-sm text-muted-foreground">Loading recent orders...</p>
+              ) : recentOrders.length === 0 ? (
+                <p className="text-sm text-muted-foreground border-2 border-dashed rounded-lg p-6 text-center">No orders available yet.</p>
+              ) : (
+                recentOrders.map((order) => (
+                  <div key={order.id} className="flex items-center justify-between">
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium leading-none">Order #{order.id.substring(0, 8)}...</p>
+                      <p className="text-sm text-muted-foreground">{order.customerEmail || "Guest"}</p>
+                    </div>
+                    <div className="font-medium">₹{(order.total || 0).toLocaleString()}</div>
                   </div>
-                  <div className="font-medium">₹{(1299 * i).toLocaleString()}</div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </CardContent>
         </Card>
@@ -110,7 +198,7 @@ export default function AdminDashboardPage() {
                     <Undo2 className="w-4 h-4" />
                   </div>
                   <div>
-                    <p className="font-medium text-orange-900">14 Pending Returns</p>
+                    <p className="font-medium text-orange-900">{metrics.pendingReturns} Pending Returns</p>
                     <p className="text-xs text-orange-700">Require approval or processing</p>
                   </div>
                 </div>
@@ -125,8 +213,8 @@ export default function AdminDashboardPage() {
                     <MessageSquare className="w-4 h-4" />
                   </div>
                   <div>
-                    <p className="font-medium text-blue-900">8 Open Support Tickets</p>
-                    <p className="text-xs text-blue-700">3 waiting for more than 24 hours</p>
+                    <p className="font-medium text-blue-900">{metrics.openTickets} Open Support Tickets</p>
+                    <p className="text-xs text-blue-700">Awaiting response</p>
                   </div>
                 </div>
                 <Link href="/dashboard/tickets" className="text-sm font-medium text-blue-700 flex items-center hover:underline">
@@ -140,7 +228,7 @@ export default function AdminDashboardPage() {
                     <AlertCircle className="w-4 h-4" />
                   </div>
                   <div>
-                    <p className="font-medium text-red-900">12 Low-Stock Alerts</p>
+                    <p className="font-medium text-red-900">{metrics.lowStockCount} Low-Stock Alerts</p>
                     <p className="text-xs text-red-700">Inventory critically low</p>
                   </div>
                 </div>

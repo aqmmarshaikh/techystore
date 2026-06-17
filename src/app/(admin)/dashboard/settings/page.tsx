@@ -12,7 +12,7 @@ import { toast } from "sonner";
 export default function AdminSettingsPage() {
   const [loading, setLoading] = useState(false);
   const [settings, setSettings] = useState({
-    storeName: "FreshMart",
+    storeName: "TechyMart",
     freeDeliveryThreshold: 999,
     cancellationWindow: 24, // hours
     supportName: "Ammar Shaikh",

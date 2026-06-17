@@ -5,60 +5,28 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Activity, Plus, Edit, Trash, Settings } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-
-// Mock interface for Audit Logs since we haven't populated them yet
-interface AuditLog {
-  id: string;
-  adminEmail: string;
-  action: "CREATE" | "UPDATE" | "DELETE" | "SYSTEM";
-  resourceType: string;
-  resourceId: string;
-  timestamp: string;
-  details: string;
-}
+import { AuditService, AuditLog } from "@/services/audit.service";
 
 export default function AdminActivityPage() {
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate fetching audit logs from Firestore
-    setTimeout(() => {
-      setLogs([
-        {
-          id: "log-1",
-          adminEmail: "ammarshaikh6100@gmail.com",
-          action: "UPDATE",
-          resourceType: "Global Settings",
-          resourceId: "settings-doc",
-          timestamp: new Date().toISOString(),
-          details: "Updated free delivery threshold to ₹999",
-        },
-        {
-          id: "log-2",
-          adminEmail: "ammarshaikh6100@gmail.com",
-          action: "CREATE",
-          resourceType: "Product",
-          resourceId: "prod-12345",
-          timestamp: new Date(Date.now() - 3600000).toISOString(),
-          details: "Created 'Premium Wireless Headphones'",
-        },
-        {
-          id: "log-3",
-          adminEmail: "system@freshmart.com",
-          action: "SYSTEM",
-          resourceType: "Database Index",
-          resourceId: "idx-products",
-          timestamp: new Date(Date.now() - 86400000).toISOString(),
-          details: "Automated index generation complete",
-        }
-      ]);
-      setLoading(false);
-    }, 1000);
+    const fetchLogs = async () => {
+      try {
+        const data = await AuditService.getLogs();
+        setLogs(data);
+      } catch (error) {
+        console.error("Failed to fetch audit logs:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchLogs();
   }, []);
 
   const getActionIcon = (action: string) => {
-    switch (action) {
+    switch (action.toUpperCase()) {
       case "CREATE": return <Plus className="w-4 h-4 text-green-500" />;
       case "UPDATE": return <Edit className="w-4 h-4 text-blue-500" />;
       case "DELETE": return <Trash className="w-4 h-4 text-red-500" />;
@@ -67,11 +35,11 @@ export default function AdminActivityPage() {
   };
 
   const getActionBadge = (action: string) => {
-    switch (action) {
+    switch (action.toUpperCase()) {
       case "CREATE": return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">CREATE</Badge>;
       case "UPDATE": return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">UPDATE</Badge>;
       case "DELETE": return <Badge className="bg-red-100 text-red-800 hover:bg-red-100">DELETE</Badge>;
-      default: return <Badge variant="secondary">SYSTEM</Badge>;
+      default: return <Badge variant="secondary">{action.toUpperCase()}</Badge>;
     }
   };
 
@@ -104,7 +72,7 @@ export default function AdminActivityPage() {
                 </div>
               ))
             ) : logs.length === 0 ? (
-              <div className="text-center py-12 text-muted-foreground">
+              <div className="text-center py-12 text-muted-foreground border-2 border-dashed rounded-lg bg-slate-50">
                 No activity logs found.
               </div>
             ) : (
@@ -116,7 +84,7 @@ export default function AdminActivityPage() {
                   <div className="space-y-1 w-full">
                     <div className="flex items-center justify-between">
                       <p className="text-sm font-medium">
-                        <span className="font-semibold">{log.adminEmail}</span> performed an action on {log.resourceType}
+                        <span className="font-semibold">{log.adminId}</span> performed an action on {log.entityType}
                       </p>
                       <span className="text-xs text-muted-foreground">
                         {new Date(log.timestamp).toLocaleString()}
@@ -126,7 +94,7 @@ export default function AdminActivityPage() {
                       {getActionBadge(log.action)}
                       <span className="text-sm text-muted-foreground">{log.details}</span>
                     </div>
-                    <p className="text-xs text-slate-400 font-mono mt-2">ID: {log.resourceId}</p>
+                    {log.entityId && <p className="text-xs text-slate-400 font-mono mt-2">ID: {log.entityId}</p>}
                   </div>
                 </div>
               ))
