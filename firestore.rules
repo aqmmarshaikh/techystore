@@ -1,0 +1,54 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+  
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isUser(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // In our app, we define admin claim in Firebase auth OR via a user document
+    // For simplicity, we check if the user doc has role == 'admin'
+    function isAdmin() {
+      return isAuthenticated() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // Users Collection
+    match /users/{userId} {
+      allow read, write: if isUser(userId) || isAdmin();
+    }
+    
+    // Products Collection
+    match /products/{productId} {
+      allow read: if true; // Anyone can read products
+      allow write: if isAdmin(); // Only admins can manage products
+    }
+    
+    // Categories Collection
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    // Orders Collection
+    match /orders/{orderId} {
+      // Users can read their own orders, admins can read all
+      allow read: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      // Users can create orders, admins can update/delete
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAdmin();
+    }
+    
+    // Reviews Collection
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isUser(resource.data.userId) || isAdmin();
+    }
+  }
+}

@@ -1,0 +1,20 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    function isAdmin() {
+      // In storage rules we can't easily fetch firestore docs without experimental features
+      // For simplicity, we assume authenticated users can upload images, or we enforce via custom claims.
+      return request.auth != null;
+    }
+
+    match /products/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

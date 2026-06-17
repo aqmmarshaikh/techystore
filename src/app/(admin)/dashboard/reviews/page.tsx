@@ -1,0 +1,149 @@
+"use client";
+
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Search, Star, ShieldCheck, EyeOff, MoreHorizontal } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+interface Review {
+  id: string;
+  productName: string;
+  customerName: string;
+  rating: number;
+  text: string;
+  date: string;
+  status: "Pending" | "Approved" | "Hidden";
+}
+
+const MOCK_REVIEWS: Review[] = [
+  {
+    id: "REV-001",
+    productName: "Premium Wireless Headphones",
+    customerName: "Alice Smith",
+    rating: 5,
+    text: "Absolutely love these! The noise cancellation is unreal.",
+    date: "2026-10-25",
+    status: "Pending"
+  },
+  {
+    id: "REV-002",
+    productName: "Minimalist Smartwatch",
+    customerName: "Bob Jones",
+    rating: 1,
+    text: "Horrible product. Broke after 2 days. DO NOT BUY.",
+    date: "2026-10-24",
+    status: "Pending"
+  },
+  {
+    id: "REV-003",
+    productName: "Ergonomic Office Chair",
+    customerName: "Charlie Davis",
+    rating: 4,
+    text: "Very comfortable, but assembly took longer than expected.",
+    date: "2026-10-22",
+    status: "Approved"
+  },
+  {
+    id: "REV-004",
+    productName: "Mechanical Keyboard",
+    customerName: "Dave Wilson",
+    rating: 5,
+    text: "spam spam buy cheap rolex here http://spam.com",
+    date: "2026-10-20",
+    status: "Hidden"
+  }
+];
+
+export default function ReviewsModerationPage() {
+  const [reviews, setReviews] = useState<Review[]>(MOCK_REVIEWS);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const handleUpdateStatus = (id: string, status: "Approved" | "Hidden") => {
+    setReviews(reviews.map(r => r.id === id ? { ...r, status } : r));
+    toast.success(`Review ${status.toLowerCase()} successfully`);
+  };
+
+  const filteredReviews = reviews.filter(r => 
+    r.productName.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    r.text.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  return (
+    <div className="space-y-8 pb-16">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Review Moderation</h1>
+          <p className="text-muted-foreground mt-1">Approve, hide, and manage customer product reviews.</p>
+        </div>
+        <div className="relative">
+          <Search className="w-4 h-4 absolute left-3 top-2.5 text-muted-foreground" />
+          <Input 
+            placeholder="Search reviews..." 
+            className="pl-9 w-[300px]"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        {filteredReviews.length === 0 ? (
+          <div className="text-center py-12 text-muted-foreground border rounded-lg bg-card">
+            No reviews found matching your search.
+          </div>
+        ) : (
+          filteredReviews.map((review) => (
+            <Card key={review.id} className={review.status === "Hidden" ? "opacity-75 bg-slate-50" : ""}>
+              <CardContent className="p-6 flex flex-col sm:flex-row gap-6">
+                {/* Left Side: Product & Rating */}
+                <div className="sm:w-1/4 border-b sm:border-b-0 sm:border-r pb-4 sm:pb-0 sm:pr-6">
+                  <p className="font-semibold text-sm line-clamp-1">{review.productName}</p>
+                  <p className="text-xs text-muted-foreground mt-1">By {review.customerName}</p>
+                  <div className="flex items-center gap-1 mt-3">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className={`w-4 h-4 ${i < review.rating ? "fill-yellow-400 text-yellow-400" : "text-slate-200"}`} />
+                    ))}
+                  </div>
+                  <p className="text-xs text-slate-400 mt-2">{review.date}</p>
+                </div>
+                
+                {/* Middle: Review Text */}
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    {review.status === "Pending" && <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100 border-0">Needs Review</Badge>}
+                    {review.status === "Approved" && <Badge className="bg-green-100 text-green-800 hover:bg-green-100 border-0"><ShieldCheck className="w-3 h-3 mr-1"/> Approved</Badge>}
+                    {review.status === "Hidden" && <Badge className="bg-slate-200 text-slate-700 hover:bg-slate-200 border-0"><EyeOff className="w-3 h-3 mr-1"/> Hidden</Badge>}
+                  </div>
+                  <p className="text-sm leading-relaxed">{review.text}</p>
+                </div>
+
+                {/* Right Side: Actions */}
+                <div className="sm:w-32 flex sm:flex-col justify-end sm:justify-start gap-2">
+                  {review.status !== "Approved" && (
+                    <Button size="sm" className="w-full bg-green-600 hover:bg-green-700" onClick={() => handleUpdateStatus(review.id, "Approved")}>
+                      Approve
+                    </Button>
+                  )}
+                  {review.status !== "Hidden" && (
+                    <Button size="sm" variant="outline" className="w-full text-red-600 border-red-200 hover:bg-red-50" onClick={() => handleUpdateStatus(review.id, "Hidden")}>
+                      Hide
+                    </Button>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
